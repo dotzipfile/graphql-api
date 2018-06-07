@@ -9,6 +9,9 @@ const fs = require('fs');
 const hapi = require('hapi');
 const mongoose = require('mongoose');
 
+// Local dependencies
+const Painting = require('./models/Painting');
+
 // Read in config details such as username, password and url for mongodb
 const sensitiveDataFile = fs.readFileSync('sensitive-data.json', 'utf8');
 const configDetails = JSON.parse(sensitiveDataFile);
@@ -31,13 +34,36 @@ const server = hapi.server({
 // Initialise server
 const init = async() => {
   // Define / 
-  server.route({
-    method: 'GET',
-    path: '/',
-    handler: function(request, reply) {
-      return `<h1>My GraphQL API`;
+  server.route([
+    {
+      method: 'GET',
+      path: '/',
+      handler: (request, reply) => {
+        return `<h1>My GraphQL API`;
+      }
+    },
+    {
+      method: 'GET',
+      path: '/api/v1/paintings',
+      handler: (req, reply) => {
+        return Painting.find();
+      }
+    },
+    {
+      method: 'POST',
+      path: '/api/v1/paintings',
+      handler: (req, reply) => {
+        const { name, url, techniques } = req.payload;
+        const painting = new Painting({
+          name,
+          url,
+          techniques
+        });
+
+        return painting.save();
+      }
     }
-  });
+  ]);
 
   // Start server
   await server.start();
