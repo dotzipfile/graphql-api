@@ -10,7 +10,7 @@ const Schema = mongoose.Schema;
 const PaintingSchema = new Schema({
   name: String,
   url: String,
-  techniques: [ String ]
+  technique: String
 });
 
 // Export the module

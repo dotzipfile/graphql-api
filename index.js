@@ -8,9 +8,11 @@ const fs = require('fs');
 // External Dependencies
 const hapi = require('hapi');
 const mongoose = require('mongoose');
+const { graphqlHapi, graphiqlHapi } = require('apollo-server-hapi');
 
 // Local dependencies
 const Painting = require('./models/Painting');
+const schema = require('./graphql/schema');
 
 // Read in config details such as username, password and url for mongodb
 const sensitiveDataFile = fs.readFileSync('sensitive-data.json', 'utf8');
@@ -33,13 +35,13 @@ const server = hapi.server({
 
 // Initialise server
 const init = async() => {
-  // Define / 
+  // Define routes
   server.route([
     {
       method: 'GET',
       path: '/',
       handler: (request, reply) => {
-        return `<h1>My GraphQL API`;
+        return `<h1>My GraphQL API</h1>`;
       }
     },
     {
@@ -68,6 +70,34 @@ const init = async() => {
   // Start server
   await server.start();
   console.log(`Server running at: ${ server.info.uri }`);
+
+  // Register hapi-graphql plugin
+  await server.register({
+    plugin: graphiqlHapi,
+    options: {
+      path: '/graphiql',
+      graphiqlOptions: {
+        endpointURL: '/graphql'
+      },
+      route: {
+        cors: true
+      }
+    }
+  });
+
+  // Register graphqlHapi plugin
+  await server.register({
+    plugin: graphqlHapi,
+    options: {
+      path: '/graphql',
+      graphqlOptions: {
+        schema
+      },
+      route: {
+        cors: true
+      }
+    }
+  });
 };
 
 // Call init
