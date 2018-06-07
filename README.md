@@ -7,10 +7,17 @@ Run:
 **npm start**
 
 Create a **sensitive-data.json** file in the root dir with the following structure:
+
 {
+
   "mongoDetails": {
-    "username": "<username>",
-    "password": "<password>",
-    "url": "<url>"
+
+    "username": "username",
+
+    "password": "password",
+
+    "url": "url"
+
   }
+
 }
